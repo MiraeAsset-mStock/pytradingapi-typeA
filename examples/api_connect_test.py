@@ -1,4 +1,7 @@
+ pip intall git+https://github.com/MiraeAsset-mStock/pytradingapi-typeA.git
 
+import os,sys
+import csv
 import logging
 import json
 
