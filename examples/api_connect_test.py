@@ -1,4 +1,4 @@
- pip intall git+https://github.com/MiraeAsset-mStock/pytradingapi-typeA.git
+#pip intall git+https://github.com/MiraeAsset-mStock/pytradingapi-typeA.git
 
 import os,sys
 import csv
@@ -7,7 +7,6 @@ import json
 
 from tradingapi_a.mconnect import *
 from tradingapi_a import __config__
-print('asfasf')
 # Create and configure logger
 logging.basicConfig(filename="miraesdk_typeA.log",
                     format='%(asctime)s %(message)s',
@@ -20,12 +19,16 @@ test_logger = logging.getLogger()
 test_logger.setLevel(logging.INFO)
 
 __config__.API_KEY="QxEvDCS4vqB37/avSE++uQ@@"
+user_id="9876543210" #or "MA87654"
+password='your_password'
+
+
+
 api_key=__config__.API_KEY
 
-#Testing NConnect API
+#Testing MConnect API
 #Object for NConnect API
 mconnect_obj=MConnect()
-print("ok")
 def first_login():
     login_response=mconnect_obj.login("user_id","password")
     print('sending 3 digit token...')
