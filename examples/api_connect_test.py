@@ -1,13 +1,12 @@
+#pip intall git+https://github.com/MiraeAsset-mStock/pytradingapi-typeA.git
+
 import os,sys
 import csv
 import logging
+import json
 
-
-parent_dir=os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-sys.path.append(parent_dir)
 from tradingapi_a.mconnect import *
 from tradingapi_a import __config__
-
 # Create and configure logger
 logging.basicConfig(filename="miraesdk_typeA.log",
                     format='%(asctime)s %(message)s',
@@ -19,26 +18,42 @@ test_logger = logging.getLogger()
 # Setting the threshold of logger to DEBUG
 test_logger.setLevel(logging.INFO)
 
-
-#Testing NConnect API
-#Object for NConnect API
-mconnect_obj=MConnect()
-
-#Login Via Tasc API, Receive Token in response
-login_response=mconnect_obj.login("RAHUL","Macm@123")
-test_logger.info(f"Request : Login. Response received : {login_response.json()}")
-
-#Generate access token by calling generate session
-gen_response=mconnect_obj.generate_session(__config__.API_KEY,"123","W")
-test_logger.info(f"Request : Generate Session. Response received : {gen_response.json()}")
+__config__.API_KEY="QxEvDCS4vqB37/avSE++uQ@@"
+user_id="9876543210" #or "MA87654"
+password='your_password'
 
 
-#Getting API Key
+
 api_key=__config__.API_KEY
 
-#Getting Access token
-access_token=mconnect_obj.access_token
+#Testing MConnect API
+#Object for NConnect API
+mconnect_obj=MConnect()
+def first_login():
+    login_response=mconnect_obj.login("user_id","password")
+    print('sending 3 digit token...')
+    token=input('please enter token you received on mobile or email:')
+    gen_response=mconnect_obj.generate_session(__config__.API_KEY,token,"W")
+    data={'access_token':(gen_response.json()['data']['access_token'])}      
+    with open("access_token.json", "w") as json_file:
+        json.dump(data, json_file, indent=4)    
+def second_login():
+    with open("access_token.json", "r") as file:
+        data = json.load(file)
+        # Get the value of 'access_token'
+        access_token = data["access_token"]
 
+    mconnect_obj.set_api_key(api_key)
+    mconnect_obj.set_access_token(access_token)
+
+try:
+    second_login()
+except Exception as e:
+    try:
+        first_login()
+    except Exception as e:
+        print("error:",e)    
+  
 #Test Order Placement, Modification etc
 
 #Place Order
