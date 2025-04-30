@@ -1,4 +1,4 @@
-API_KEY="cLy87zv0l+CmKqb9QD5dpw@@"
+API_KEY="mticker_url="wss://ws.mstock.trade""
 default_root_uri= "https://api.mstock.trade/"
 routes= {
         "login": "openapi/typea/connect/login",
