@@ -123,6 +123,44 @@ logging.info('Testing complete')
 
 
 ```
+### Example API Scripts
+
+The `examples/All_Api` folder contains ready-to-use scripts for various API operations, such as:
+
+- `Calculate_Order_Margin.py` – Calculate margin required for an order
+- `Cancel_Order.py` – Cancel a specific order
+- `Cancel_All_Orders.py` – Cancel all open orders
+- `FundsSummary.py` – Get fund summary
+- `Holdings.py` – Fetch holdings
+- `Instrument_historical.py` – Fetch historical data for an instrument
+- `Intraday_Chart.py` – Get intraday chart data
+- `Limit_Order_Placement.py` – Place a limit order
+- `Login.py` – Login and session management
+- `Market_LTP.py` – Get last traded price (LTP)
+- `OHLC.py` – Get OHLC data
+- `Option_Chain_Master.py` – Get option chain master
+- `Option_Chain.py` – Get option chain data
+- `Order_Book.py` – Fetch order book
+- `Order_Details_individual.py` – Get details of a specific order
+- `Order_Modify.py` – Modify an existing order
+- `Order_Placement.py` – Place a regular order
+- `Position_Conversion.py` – Convert position type
+- `Position.py` – Get current positions
+- `Script_Master.py` – Get script master data
+- `SL_Order_Placement.py` – Place a stop loss order
+- `SL-M_Order_Placement.py` – Place a stop loss market order
+- `Trade_book.py` – Fetch trade book
+- `Trades_History.py` – Get trade history
+
+**How to Run:**
+
+- **Using the Run icon:**  
+  Open any `.py` file in your editor (like VS Code) and click the **Run** icon at the top right.
+
+- **Using the command line:**  
+  ```bash
+  python path_of_the_python_file_that_you_want_to_run
+
 
 ### Running Unit Tests
 

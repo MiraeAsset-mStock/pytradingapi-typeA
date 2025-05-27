@@ -640,13 +640,15 @@ class MTicker(object):
                             "ask": []
                         }
 
+                    
+                    
                     for i,p in enumerate(range(64, len(packet), 4)):
                         depth["ask" if i >= 5 else "bid"].append({
-                                "quantity": self._unpack_int(packet, p, p + 4),
-                                "price": self._unpack_int(packet, p + 4, p + 8) / divisor,
+                                "quantity": self._unpack_int(packet, p, p + 4) if len(packet[p: p + 4])>0 else '',
+                                "price": self._unpack_int(packet, p + 4, p + 8) / divisor if len(packet[p+4: p + 8])>0 else '',
                                 #Adding to ignore empty byte buffer being sent
                                 "orders": self._unpack_int(packet, p + 8, p + 10, byte_format="H") if len(packet[p + 8: p + 10])>0 else '',
-                                "padding":self._unpack_int(packet, p + 10, p + 12) if len(packet[p + 10: p + 12])>0 else '',
+                                "padding":self._unpack_int(packet, p + 10, p + 12, byte_format="H") if len(packet[p + 10: p + 12])>0 else '', #Changed struct format to allow padding less than 4 bytes
                             })
 
                     d["depth"] = depth
