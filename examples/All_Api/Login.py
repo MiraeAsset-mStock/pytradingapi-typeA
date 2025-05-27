@@ -21,10 +21,10 @@ from tradingapi_a.mconnect import MConnect
 from colorama import init, Fore, Style
 init(autoreset=True)
 mconnect_obj = MConnect()
-# user_id = "8976881099"
-# password = "Sandy@1999"
-user_id = "7223082367"
-password = "Boogeyman@43"
+user_id = "8976881099"
+password = "Sandy@1999"
+# user_id = "7223082367"
+# password = "Boogeyman@43"
 
 try:
     login_response = mconnect_obj.login(user_id, password)
