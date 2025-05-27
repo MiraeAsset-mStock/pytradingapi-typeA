@@ -1,4 +1,4 @@
-API_KEY="2axlHl4XWZoO2mSToElejcTOkc09QSxHP9YxrywofSo@"  # Replace with your actual API key
+API_KEY="2axlHl4XWZoO2mSToEle"  # Replace with your actual API key
 default_root_uri= "https://api.mstock.trade/"
 routes= {
         "login": "openapi/typea/connect/login",
