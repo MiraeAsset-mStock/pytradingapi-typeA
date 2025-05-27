@@ -1,17 +1,3 @@
-# import json
-# from tradingapi_a.mconnect import MConnect
-# from tradingapi_a import __config__
-# mconnect_obj = MConnect()
-# user_id = "7223082367"
-# password = "Boogeyman@43"
-# # user_id = "8976881099"
-# # password = "Sandy@1999"
-# login_response=mconnect_obj.login(user_id,password)
-# otp = input("Enter your OTP: ")
-# gen_response=mconnect_obj.generate_session(__config__.API_KEY,otp,"W")
-# parsed = json.loads(gen_response.text)
-# with open("access_token.txt", "w") as f:
-#     f.write(parsed["data"]["access_token"])
 import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
@@ -21,10 +7,9 @@ from tradingapi_a.mconnect import MConnect
 from colorama import init, Fore, Style
 init(autoreset=True)
 mconnect_obj = MConnect()
-user_id = "8976881099"
-password = "Sandy@1999"
-# user_id = "7223082367"
-# password = "Boogeyman@43"
+user_id = "Your_userid"
+password = "Your_password_here"
+
 
 try:
     login_response = mconnect_obj.login(user_id, password)
