@@ -24,3 +24,4 @@ url = f"{default_root_uri}{routes['option_chain']}".format(
 )
 response = requests.get(url, headers=get_headers())
 print(Fore.GREEN + "Option_Chain==>"+ Fore.YELLOW+ response.text)
+ 

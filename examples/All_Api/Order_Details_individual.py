@@ -22,4 +22,4 @@ details_packet = {"order_no": order_id, "segment": segment}
 url = f"{default_root_uri}/{routes['order_details']}"
 response = requests.get(url, headers=get_headers(), data=details_packet)
 
-print(Fore.GREEN + "Order Details==>", Fore.YELLOW + response.text)
+print(Fore.GREEN + "Order Details==>", Fore.YELLOW + response.text) 

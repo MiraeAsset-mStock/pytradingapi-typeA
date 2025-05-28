@@ -15,3 +15,4 @@ exch = "2"  # or "BSE", or any exchange code as required
 url = f"{default_root_uri}{routes['option_chain_master']}".format(exch=exch)
 response = requests.get(url, headers=get_headers())
 print(Fore.GREEN + "Option_Chain_Master==>"+Fore.YELLOW+ response.text)
+ 

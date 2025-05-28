@@ -10,4 +10,4 @@ from tradingapi_a.__config__ import routes
 
 url = f"{default_root_uri}/{routes['order_book']}"
 response = requests.get(url, headers=get_headers())
-print(Fore.GREEN+"Order Book==>"+Fore.YELLOW+ response.text)
+print(Fore.GREEN+"Order Book==>"+Fore.YELLOW+ response.text) 

@@ -5,7 +5,7 @@ import requests
 from tradingapi_a.__config__ import get_headers
 from colorama import init, Fore
 init(autoreset=True)
-from tradingapi_a.__config__ import default_root_uri
+from tradingapi_a.__config__ import default_root_uri 
 from tradingapi_a.__config__ import routes
 
 url = f"{default_root_uri}/{routes['cancel_all']}"

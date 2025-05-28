@@ -16,4 +16,4 @@ params = [
 # For equities, keep 'NSE' or 'BSE' as is and just change 'ACC' to your desired script name.
 url = f"{default_root_uri}{routes['market_ltp']}/"
 response = requests.get(url, headers=get_headers(), params=params)
-print(Fore.GREEN + "OHLC Results==>" + Fore.YELLOW + response.text)
+print(Fore.GREEN + "OHLC Results==>" + Fore.YELLOW + response.text) 

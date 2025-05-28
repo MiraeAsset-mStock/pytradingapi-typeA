@@ -675,5 +675,5 @@ class MTicker(object):
             packets.append(bin[j + 2: j + 2 + packet_length])
             j = j + 2 + packet_length
 
-        return packets
+        return packets 
 

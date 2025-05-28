@@ -10,4 +10,4 @@ from tradingapi_a.__config__ import routes
 
 url = f"{default_root_uri}/{routes['instrument_scrip']}"
 response = requests.get(url, headers=get_headers())
-print(Fore.GREEN+"Script Master==>"+Fore.YELLOW+ response.text)
+print(Fore.GREEN+"Script Master==>"+Fore.YELLOW+ response.text) 

@@ -31,7 +31,7 @@ data = {
     "price": "0",
     "trigger_price": "0"
 }
-
+ 
 print("Current order data:")
 for k, v in data.items():
     print(f"{k}: {v}")

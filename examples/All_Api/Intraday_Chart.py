@@ -15,7 +15,7 @@ print(f"Current exchange: {exchange}")
 print(f"Current scriptName: {scriptName}")
 print(f"Current interval: {interval}")
 choice = input("Do you want to continue with these values? (y/n): ").strip().lower()
-
+ 
 if choice == 'n':
     exchange = input("Enter exchange (e.g., 1 for NSE): ").strip() or exchange
     scriptName = input("Enter script name (e.g., AUBANK): ").strip() or scriptName

@@ -33,4 +33,4 @@ if choice == 'n':
 
 url = f"{default_root_uri}{routes['place_order']}"
 response = requests.post(url, headers=get_headers(), data=data)
-print(Fore.GREEN + " FO Order Placement==>" + Fore.YELLOW + response.text)
+print(Fore.GREEN + " FO Order Placement==>" + Fore.YELLOW + response.text) 

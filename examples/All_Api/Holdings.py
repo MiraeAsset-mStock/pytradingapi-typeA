@@ -11,3 +11,4 @@ from tradingapi_a.__config__ import routes
 url = f"{default_root_uri}/{routes['holdings']}"
 response = requests.get(url, headers=get_headers())
 print(Fore.GREEN + "Holdings==>"+Fore.YELLOW+ response.text)
+ 

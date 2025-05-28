@@ -29,7 +29,7 @@ if choice == 'n':
     for k in data:
         new_val = input(f"Enter value for {k} (press Enter to keep '{data[k]}'): ").strip()
         if new_val:
-            data[k] = new_val
+            data[k] = new_val 
 
 url = f"{default_root_uri}{routes['place_order']}"
 response = requests.post(url, headers=get_headers(), data=data)

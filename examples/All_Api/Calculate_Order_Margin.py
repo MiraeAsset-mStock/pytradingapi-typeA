@@ -9,7 +9,7 @@ init(autoreset=True)
 
 data = {
     "exchange": "NFO",
-    "tradingsymbol": "ACC25FEB1800CE",
+    "tradingsymbol": "ACC25FEB1800CE", 
     "transaction_type": "BUY",
     "variety": "regular",
     "product": "CNC",
