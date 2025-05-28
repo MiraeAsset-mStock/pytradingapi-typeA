@@ -24,22 +24,3 @@ if choice == 'n':
 url = f"{default_root_uri}/{routes['trade_history']}"
 response = requests.get(url,headers=get_headers(),data=data)
 print(Fore.GREEN+"TradeHistory Results==>"+ Fore.YELLOW+ response.text)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# url = f"{default_root_uri}/{routes['trade_history']}"
-# response = requests.get(url, headers=get_headers(),data=data)
