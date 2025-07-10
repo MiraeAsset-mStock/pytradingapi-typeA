@@ -21,8 +21,10 @@ mconnect_obj=MConnect()
 login_response=mconnect_obj.login("RAHUL","Macm@123")
 test_logger.info(f"Request : Login. Response received : {login_response.json()}")
 
+OTP=input("Enter OTP received on registered mobile number : ")
+
 #Generate access token by calling generate session
-gen_response=mconnect_obj.generate_session(__config__.API_KEY,"123","W")
+gen_response=mconnect_obj.generate_session(__config__.API_KEY,OTP,"W")
 test_logger.info(f"Request : Generate Session. Response received : {gen_response.json()}")
 
 

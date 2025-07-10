@@ -25,11 +25,13 @@ test_logger.setLevel(logging.INFO)
 mconnect_obj=MConnect()
 
 #Login Via Tasc API, Receive Token in response
-login_response=mconnect_obj.login("RAHUL","Macm@123")
+login_response=mconnect_obj.login("8976881099","Sandy@1999")
 test_logger.info(f"Request : Login. Response received : {login_response.json()}")
 
+OTP=input("Enter OTP received on registered mobile number : ")
+
 #Generate access token by calling generate session
-gen_response=mconnect_obj.generate_session(__config__.API_KEY,"123","W")
+gen_response=mconnect_obj.generate_session(__config__.API_KEY,OTP,"I")
 test_logger.info(f"Request : Generate Session. Response received : {gen_response.json()}")
 
 
@@ -39,10 +41,11 @@ api_key=__config__.API_KEY
 #Getting Access token
 access_token=mconnect_obj.access_token
 
+
 #Test Order Placement, Modification etc
 
 #Place Order
-porder_resp=mconnect_obj.place_order("SBICARD","NSE","BUY","MARKET","10","CNC","DAY","0","0")
+porder_resp=mconnect_obj.place_order("Regular","SBICARD","NSE","BUY","MARKET","10","CNC","DAY","0","0")
 test_logger.info(f"Request : Place Order. Response received : {porder_resp.json()}")
 
 #Modify Order
@@ -76,6 +79,7 @@ test_logger.info(f"Request : Order Details. Response received : {order_det.json(
 #Get Holdings
 holdings=mconnect_obj.get_holdings()
 test_logger.info(f"Request : Holdings. Response received : {holdings.json()}")
+
 
 #Get Historical Chart
 historical_chart=mconnect_obj.get_historical_chart("11536","60minute","2025-01-05","2025-01-10") 
@@ -116,6 +120,51 @@ test_logger.info(f"Request : Fetch Fund Summary. Response received : {get_fund_s
 # #Convert Position
 conv_position=mconnect_obj.convert_position("TCS","NSE","BUY","DAY","3","CNC","MIS")
 test_logger.info(f"Request : Position Conversion. Response received : {conv_position.json()}")
+
+#Loser Gainer
+los_gain=mconnect_obj.loser_gainer("1","13","1","G")
+test_logger.info(f"Request : Loser Gainer. Response received : {los_gain.json()}")
+
+#Create Basket
+cre_basket=mconnect_obj.create_basket("Tets Baskett","Tets Bakset Description")
+test_logger.info(f"Request : Create Basket. Response received : {cre_basket.json()}")
+
+#Fetch Basket
+fetch_bask=mconnect_obj.fetch_basket()
+test_logger.info(f"Request : Fetch Basket. Response received : {fetch_bask.json()}")
+
+#Rename Basket
+rename_bask=mconnect_obj.rename_basket("ZRDTest_New","251")
+test_logger.info(f"Request : Rename Basket. Response received : {rename_bask.json()}")
+
+#Delete Basket
+del_basket=mconnect_obj.delete_basket("251")
+test_logger.info(f"Request : Delete Basket. Response received : {del_basket.json()}")
+
+#Calculate Basket
+calc_basket=mconnect_obj.calculate_basket("0","C","0","E","0","11915","LMT","Test Basket Updated Renamed","I","DAY","1","A","B","1","19.02","269","NSE")
+test_logger.info(f"Request : Calculate Basket. Response received : {calc_basket.json()}")
+
+#Get Trade Book
+trade_book=mconnect_obj.get_trade_book()
+test_logger.info(f"Request : Get Trade Book. Response received : {trade_book.json()}")
+
+#Get Intraday chart
+intr_chart=mconnect_obj.get_intraday_chart("4","AUBANK")
+test_logger.info(f"Request : Get Intraday chart data. Response received : {intr_chart.json()}")
+
+#Get Option Chain Master
+opt_chain_master=mconnect_obj.get_option_chain_master("5")
+test_logger.info(f"Request : Get Option Chain Master. Response received : {opt_chain_master.json()}")
+
+#Get Option Chain data
+opt_chain_data=mconnect_obj.get_option_chain_data("2","1432996200","22")
+test_logger.info(f"Request : Get Option Chain Data. Response received : {opt_chain_data.json()}")
+
+#Logout
+logout=mconnect_obj.logout()
+test_logger.info(f"Request : Logout : {logout.json()}")
+
 
 
 
