@@ -25,7 +25,7 @@ test_logger.setLevel(logging.INFO)
 mconnect_obj=MConnect()
 
 #Login Via Tasc API, Receive Token in response
-login_response=mconnect_obj.login("8976881099","Sandy@1999")
+login_response=mconnect_obj.login("RAHUL","Abc@123")
 test_logger.info(f"Request : Login. Response received : {login_response.json()}")
 
 OTP=input("Enter OTP received on registered mobile number : ")
