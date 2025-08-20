@@ -281,7 +281,7 @@ class MConnect:
         '''
         ohlc_input: List of strings in exchange:trading symbol format
         '''
-        ohlc_details={"i":value for value in ohlc_input}
+        ohlc_details={"i":[value for value in ohlc_input]}
         try:
             #Using session request
             get_ohlc_data=self._get(
@@ -301,7 +301,7 @@ class MConnect:
         '''
         ltp_input: List of strings in exchange:trading symbol format
         '''
-        ltp_details={"i":value for value in ltp_input}
+        ltp_details={"i":[value for value in ltp_input]}
         try:
             #Using session request
             get_ltp_data=self._get(
