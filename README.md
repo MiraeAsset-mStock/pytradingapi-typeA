@@ -20,7 +20,7 @@ pip install -U pip setuptools
 
 ```python
 import logging
-from TradingAPI.mconnect import *
+from tradingapi_a.mconnect import *
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -122,7 +122,7 @@ mconnect_obj.logout()
 
 ### Websocket Usage
 ```python
-from TradingAPI.mticker import *
+from tradingapi_a.mticker import *
 import logging
 
 logging.basicConfig(level=logging.DEBUG)

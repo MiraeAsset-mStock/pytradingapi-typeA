@@ -29,22 +29,22 @@ username="XYZ" #Replace with your username
 password="ABCD@123" #Replace with your password
 
 #Login Via Tasc API, Receive Token in response
-login_response=mconnect_obj.login("8976881099","Sandy@1999")
+login_response=mconnect_obj.login(username,password)
 test_logger.info(f"Request : Login. Response received : {login_response.json()}")
 
 ## !!!! NOTE - Use generate_session() only when TOTP is NOT enabled for the user. Else use verify_totp() to generate access_token !!!!
 
 # Generate session with OTP - access token by calling generate session
-# OTP=input("Enter OTP received on your registered mobile number : ");
-# gen_response=mconnect_obj.generate_session(__config__.API_KEY,OTP,"W")
-# test_logger.info(f"Request : Generate Session. Response received : {gen_response.json()}")
+OTP=input("Enter OTP received on your registered mobile number : ")
+gen_response=mconnect_obj.generate_session(__config__.API_KEY,OTP,"W")
+test_logger.info(f"Request : Generate Session. Response received : {gen_response.json()}")
 
 ## !!!! NOTE - If TOTP is enabled for the user, then only call Verify TOTP. Else skip verify_totp() !!!!
 
-#Generate session with TOTP - Check Verify TOTP
-TOTP=input("Enter TOTP from Auhtenticator app : ")
-totp_verify=mconnect_obj.verify_totp(__config__.API_KEY,TOTP)
-print(f"Request : Verify TOTP. Response received : {totp_verify.json()}")
+# #Generate session with TOTP - Check Verify TOTP
+# TOTP=input("Enter TOTP from Auhtenticator app : ")
+# totp_verify=mconnect_obj.verify_totp(__config__.API_KEY,TOTP)
+# print(f"Request : Verify TOTP. Response received : {totp_verify.json()}")
 
 #Getting API Key
 api_key=__config__.API_KEY

@@ -42,7 +42,7 @@ test_logger.info(f"Request : Login. Response received : {login_response.json()}"
 ## !!!! NOTE - If TOTP is enabled for the user, then only call Verify TOTP. Else skip verify_totp() !!!!
 
 #Generate session with TOTP - Check Verify TOTP
-TOTP=input("Enter TOTP from Auhtenticator app : ");
+TOTP=input("Enter TOTP from Auhtenticator app : ")
 totp_verify=mconnect_obj.verify_totp(__config__.API_KEY,TOTP)
 print(f"Request : Verify TOTP. Response received : {totp_verify.json()}")
 
