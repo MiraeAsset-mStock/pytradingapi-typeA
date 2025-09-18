@@ -1,9 +1,12 @@
-API_KEY="cLy87zv0l+CmKqb9QD5dpw@@"
-default_root_uri= "https://api.mstock.trade/"
+API_KEY="ENTER_YOUR_API_KEY_HERE"
+default_root_uri= "https://api.mstock.trade/" 
 routes= {
         "login": "openapi/typea/connect/login",
         "generate_session": "openapi/typea/session/token",
+        "verify_totp":"openapi/typea/session/verifytotp",
         "place_order": "openapi/typea/orders/regular",
+        "amo_order":"openapi/typea/orders/amo",
+        "cover_order":"openapi/typea/orders/co",
         "modify_order": "openapi/typea/orders/regular/{order_id}",
         "cancel_order": "openapi/typea/orders/regular/{order_id}",
         "cancel_all": "openapi/typea/orders/cancelall",
@@ -13,7 +16,7 @@ routes= {
         "calculate_order_margin": "openapi/typea/margins/orders",
         "holdings": "openapi/typea/portfolio/holdings",
         "health_statistics": "openapi/typea/Health/GetHealthStatistics",
-        "historical_chart": "openapi/typea/instruments/historical/{security_token}/{interval}",
+        "historical_chart": "openapi/typea/instruments/historical/{segment}/{security_token}/{interval}",
         "market_ohlc": "openapi/typea/instruments/quote/ohlc",
         "market_ltp": "openapi/typea/instruments/quote/ltp",
         "instrument_scrip": "openapi/typea/instruments/scriptmaster",
@@ -25,6 +28,11 @@ routes= {
         "fetch_basket":"openapi/typea/FetchBasket",
         "rename_basket":"openapi/typea/RenameBasket",
         "delete_basket":"openapi/typea/DeleteBasket",
-        "calculate_basket":"openapi/typea/CalculateBasket"
+        "calculate_basket":"openapi/typea/CalculateBasket",
+        "trade_book":"openapi/typea/tradebook", 
+        "intraday_chart":"openapi/typea/instruments/intraday/{segment_id}/{symbol}/minute",
+        "option_chain_master":"openapi/typea/getoptionchainmaster/{exchange_id}", 
+        "option_chain_data":"openapi/typea/GetOptionChain/{exchange_id}/{expiry}/{token}", 
+        "logout":"openapi/typea/logout"
     }
 mticker_url="wss://ws.mstock.trade"

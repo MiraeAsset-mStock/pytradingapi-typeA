@@ -8,7 +8,7 @@ import json
 import threading
 import struct
 import logging
-from datetime import datetime
+from datetime import datetime,timezone,timedelta
 from twisted.internet import reactor,ssl
 from twisted.internet.protocol import ReconnectingClientFactory
 from autobahn.twisted.websocket import WebSocketClientProtocol, WebSocketClientFactory, connectWS
@@ -512,7 +512,7 @@ class MTicker(object):
     def _on_noreconnect(self):
         if self.on_noreconnect:
             return self.on_noreconnect(self)
-
+    
     def _parse_text_message(self, payload):
         """Parse text message."""
         # Decode unicode data
@@ -537,6 +537,13 @@ class MTicker(object):
         if data.get("type") == "error":
             self._on_error(self, 0, data.get("data"))
 
+    def convert_from_unix_timestamp(self,timeStamp: int, year=1980):
+        # Convert Unix timestamp into a datetime value
+        origin = datetime(year, 1, 1, 0, 0, 0, 0, tzinfo=timezone.utc)
+        if timeStamp != 0:
+            return origin + timedelta(seconds=timeStamp)
+        return origin
+    
     def _parse_binary(self, bin):
         """Parse binary data to a (list of) ticks structure."""
         packets = self._split_packets(bin)  # split data to individual ticks packet
@@ -586,8 +593,11 @@ class MTicker(object):
                 # Full mode with timestamp
                 if len(packet) == 32:
                     try:
-                        timestamp = datetime.fromtimestamp(self._unpack_int(packet, 28, 32))
-                    except Exception:
+                        #Changing to custom method on 01-07-25
+                        # timestamp = datetime.fromtimestamp(self._unpack_int(packet, 28, 32)).strftime("%Y-%m-%dT%I:%M:%S%p") #Added on 25-06-25 by shrui
+                        timestamp = self.convert_from_unix_timestamp(self._unpack_int(packet, 28, 32)).strftime("%Y-%m-%dT%I:%M:%S%p")
+                    except Exception as e:
+                        print(e)
                         timestamp = None
 
                     d["exchange_timestamp"] = timestamp
@@ -616,16 +626,20 @@ class MTicker(object):
 
                 #Adding more as per documentation
                 try:
-                    d["last_traded_timestamp"]=self._unpack_int(packet, 44, 48) / divisor,
-                except Exception:
+                    #Changed on 30-06-25 by shri
+                    # d["last_traded_timestamp"]=self._unpack_int(packet, 44, 48) / divisor,
+                    # d["last_traded_timestamp"]=datetime.fromtimestamp(self._unpack_int(packet, 44, 48)).strftime("%Y-%m-%dT%I:%M:%S%p"),
+                    d["last_traded_timestamp"]=self.convert_from_unix_timestamp(self._unpack_int(packet, 44, 48)).strftime("%Y-%m-%dT%I:%M:%S%p"),
+                except Exception as e:
                     d["last_traded_timestamp"] = None
 
                 d["open_interest"]=self._unpack_int(packet,48,52)/divisor,
                 d["open_interest_high"]=self._unpack_int(packet,52,56)/divisor,
                 d["open_interest_low"]=self._unpack_int(packet,56,60)/divisor,
                 try:
-                    d["exchange_timestamp"] = datetime.fromtimestamp(self._unpack_int(packet, 60, 64))
-                except Exception:
+                    # d["exchange_timestamp"] = datetime.fromtimestamp(self._unpack_int(packet, 60, 64)).strftime("%Y-%m-%dT%I:%M:%S%p") #Added on 25-06-25
+                    d["exchange_timestamp"] = self.convert_from_unix_timestamp(self._unpack_int(packet, 60, 64)).strftime("%Y-%m-%dT%I:%M:%S%p") #Added on 25-06-25
+                except Exception as e:
                     d["exchange_timestamp"] = None
 
                 # Compute the change price using close price and last price
@@ -639,14 +653,14 @@ class MTicker(object):
                             "bid": [],
                             "ask": []
                         }
-
+                    
                     for i,p in enumerate(range(64, len(packet), 4)):
                         depth["ask" if i >= 5 else "bid"].append({
-                                "quantity": self._unpack_int(packet, p, p + 4),
-                                "price": self._unpack_int(packet, p + 4, p + 8) / divisor,
+                                "quantity": self._unpack_int(packet, p, p + 4) if len(packet[p: p + 4])>0 else '',
+                                "price": self._unpack_int(packet, p + 4, p + 8) / divisor if len(packet[p+4: p + 8])>0 else '',
                                 #Adding to ignore empty byte buffer being sent
                                 "orders": self._unpack_int(packet, p + 8, p + 10, byte_format="H") if len(packet[p + 8: p + 10])>0 else '',
-                                "padding":self._unpack_int(packet, p + 10, p + 12) if len(packet[p + 10: p + 12])>0 else '',
+                                "padding":self._unpack_int(packet, p + 10, p + 12, byte_format="H") if len(packet[p + 10: p + 12])>0 else '', #Changed struct format to allow padding less than 4 bytes
                             })
 
                     d["depth"] = depth
