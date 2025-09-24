@@ -254,7 +254,7 @@ class MTicker(object):
         #Adding access token variable
         self.access_token=access_token
 
-        #Adding api_key variable on 06-02-2025 by shri
+        
         self.api_key=api_key
         
         #Changed format on 06-02-25
@@ -594,7 +594,7 @@ class MTicker(object):
                 if len(packet) == 32:
                     try:
                         #Changing to custom method on 01-07-25
-                        # timestamp = datetime.fromtimestamp(self._unpack_int(packet, 28, 32)).strftime("%Y-%m-%dT%I:%M:%S%p") #Added on 25-06-25 by shrui
+                        # timestamp = datetime.fromtimestamp(self._unpack_int(packet, 28, 32)).strftime("%Y-%m-%dT%I:%M:%S%p")
                         timestamp = self.convert_from_unix_timestamp(self._unpack_int(packet, 28, 32)).strftime("%Y-%m-%dT%I:%M:%S%p")
                     except Exception as e:
                         print(e)
