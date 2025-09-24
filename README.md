@@ -1,12 +1,17 @@
-## TradingAPI SDK - Python Client for accessing MiraeAPI and Streaming Market Data
+## TradingAPI SDK - Python Client for accessing TradingAPI and Streaming Market Data
 
 ### Description
 TradingAPI is a complete SDK that allows you to build a trading and investment platform which includes executing orders in real time, streaming live trade and order data (Using Websockets) and more. 
 
 ### Installation
-You can install the python client via pip
+
+
+> [!IMPORTANT]
+> You can install the python client with below command. For requirements.txt file [refer here](https://github.com/MiraeAsset-mStock/pytradingapi-typeA/blob/main/requirements.txt).
 
 ```
+pip install -r requirements.txt
+
 pip install --upgrade mStock-TradingApi-A
 ```
 
@@ -15,6 +20,9 @@ It is recommended to update 'pip' and `setuptools` to the latest version if you 
 ```
 pip install -U pip setuptools
 ```
+
+>[!NOTE]
+>The package can be used with the name **tradingapi_a**
 
 ### API Usage
 
