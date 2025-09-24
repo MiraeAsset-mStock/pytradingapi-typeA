@@ -41,29 +41,90 @@ login_response=mconnect_obj.login("<user_id>","<password>")
 #Generate access token by calling generate session
 gen_response=mconnect_obj.generate_session("<API_Key>","<request_token_here>","<checksum>")
 
+#Verify TOTP (if enabled)
+mconnect_obj.verify_totp("<API_Key>","<TOTP>")
+
 #Place Order
-try:
-    porder_resp=mconnect_obj.place_order(_tradingsymbol="SBICARD",_exchange="NSE",_transaction_type="BUY",_order_type="MARKET",_quantity="10",_product="CNC",_validity="DAY",_price="0",_trigger_price="0")
-    
-    logging.info("Order placed. ID is: {}".format(porder_resp["data"]["order_id"]))
+porder_resp=mconnect_obj.place_order("regular","SBICARD","NSE","BUY","MARKET","10","CNC","DAY","0","0")
+test_logger.info(f"Request : Place Order. Response received : {porder_resp.json()}")
 
-except Exception as e:
-    logging.info("Order placement failed: {}".format(e.message))
+#Modify Order
+mconnect_obj.modify_order("order_id","SL","5","723","DAY","720","0")
 
-#Fetch all orders
-mconnect_obj.get_order_book()
-
-#Fetch all holdings
-mconnect_obj.get_holdings()
-
-#Get Net position for logged in user
-mconnect_obj.get_net_position()
+#Cancel Order
+mconnect_obj.cancel_order("order_id")
 
 #Cancel All orders
 mconnect_obj.cancel_all()
 
+#Get Order Details
+mconnect_obj.get_order_details("order_id")
+
+#Fetch all orders
+mconnect_obj.get_order_book()
+
+#Get Net position for logged in user
+mconnect_obj.get_net_position()
+
+#Calculate Order Margin
+mconnect_obj.calculate_order_margin("NSE","INFY","BUY","regular","CNC","MARKET","1","0","0")
+
+#Fetch all holdings
+mconnect_obj.get_holdings()
+
+#Get Historical Chart
+mconnect_obj.get_historical_chart("NSE","11536","60minute","2025-01-05","2025-01-10")
+
+#Get Trade History
+mconnect_obj.get_trade_history("2025-01-05","2025-01-10")
+
+#Get OHLC Data
+mconnect_obj.get_ohlc(["NSE:ACC","BSE:ACC"])
+
+#Get LTP Data
+mconnect_obj.get_ltp(["NSE:ACC","BSE:ACC"])
+
+#Get Instrument Master
+mconnect_obj.get_instruments()
+
 #Get fund Summary
 mconnect_obj.get_fund_summary()
+
+#Convert Position
+mconnect_obj.convert_position("TCS","NSE","BUY","DAY","3","CNC","MIS")
+
+#Loser Gainer
+mconnect_obj.loser_gainer("1","13","1","G")
+
+#Create Basket
+mconnect_obj.create_basket("Test Basket","Test Basket Description")
+
+#Fetch Basket
+mconnect_obj.fetch_basket()
+
+#Rename Basket
+mconnect_obj.rename_basket("New Basket Name","basket_id")
+
+#Delete Basket
+mconnect_obj.delete_basket("basket_id")
+
+#Calculate Basket
+mconnect_obj.calculate_basket("0","C","0","E","0","11915","LMT","Test Basket","I","DAY","1","A","B","1","19.02","269","NSE")
+
+#Get Trade Book
+mconnect_obj.get_trade_book()
+
+#Get Intraday Chart
+mconnect_obj.get_intraday_chart("4","AUBANK")
+
+#Get Option Chain Master
+mconnect_obj.get_option_chain_master("5")
+
+#Get Option Chain Data
+mconnect_obj.get_option_chain_data("2","1432996200","22")
+
+#Logout
+mconnect_obj.logout()
 
 ```
 

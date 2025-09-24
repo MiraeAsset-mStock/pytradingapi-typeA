@@ -7,6 +7,7 @@ import tradingapi_a.exceptions as ex
 from tradingapi_a import __config__
 from urllib.parse import urljoin
 
+
 #Creating Default Log file for API
 default_log = logging.getLogger("mconnect.log")
 default_log.addHandler(logging.FileHandler("mconnect.log", mode='a'))
@@ -97,14 +98,49 @@ class MConnect:
             self.set_api_key(_api_key)
         return gen_session
     
-    def place_order(self,_tradingsymbol,_exchange,_transaction_type,_order_type,_quantity,_product,_validity,_price,_trigger_price):
+    def verify_totp(self,_api_key,_tOtp):
+        '''
+        Method for TOTP verification for valid clients
+        '''
+        data={"api_key":_api_key,"totp":_tOtp}
+        try:
+            verify_totp_user=self._post(
+                route="verify_totp",
+                content_type="application/x-www-form-urlencoded",
+                params=data
+            )
+        except Exception as e:
+            type_, value_, traceback_ = sys.exc_info()
+            stack_trace = traceback.format_exception(type_, value_, traceback_)
+            self.logger.error(stack_trace)
+            raise e
+        if "data" in verify_totp_user.json():
+            if "access_token" in verify_totp_user.json()["data"]:
+                self.set_access_token(verify_totp_user.json()["data"]["access_token"])
+        if self.api_key is None:
+            self.set_api_key(_api_key)
+        return verify_totp_user
+    
+    #Added variety parameter on 25-06-25 to allow regular,CO and AMO orders
+    def place_order(self,_variety,_tradingsymbol,_exchange,_transaction_type,_order_type,_quantity,_product,_validity,_price,_trigger_price):
         '''
         Place a regular trading order in the provided segment
         '''
+        #Added condition for AMO, regular or CO order
+        api_route="place_order"
+        if str(_variety).upper()=="CO":
+            api_route="cover_order"
+        elif str(_variety).upper()=="AMO":
+            api_route="amo_order"
+        elif str(_variety).upper()=="REGULAR":
+            api_route="place_order"
+        else:
+            #incase of order types not available
+            return {"status":"error","message":"Only order types NORMAL,AMO and COVER are available."}
         order_packet={"tradingsymbol":_tradingsymbol,"exchange":_exchange,"transaction_type":_transaction_type,"order_type":_order_type,"quantity":_quantity,"product":_product,"validity":_validity,"price":_price,"trigger_price":_trigger_price}
         try:
             order_session=self._post(
-                route="place_order",
+                route=api_route,
                 content_type="application/x-www-form-urlencoded",
                 params=order_packet
             )
@@ -156,7 +192,8 @@ class MConnect:
         Method to cancel all the orders at once.
         '''
         try:
-            cancelAll_session=self._get(
+            #Changed to post on 29-07-25 by shri
+            cancelAll_session=self._post(
                 route="cancel_all",
                 url_args=None,
             )
@@ -184,13 +221,14 @@ class MConnect:
             raise e
         return get_ord_book
     
-    def get_order_details(self,_order_id,_segment):
+    def get_order_details(self,_order_id,_segment="E"):
         '''
         Method to retrieve the status of individual order using the order id.
         '''
         details_packet={"order_no":_order_id,"segment":_segment}
         try:
-            get_ord_details=self._get(
+            #Changed to post method on 29-07-25 by shri
+            get_ord_details=self._post(
                 route="order_details",
                 url_args=None,
                 content_type="application/x-www-form-urlencoded",
@@ -220,7 +258,7 @@ class MConnect:
     def calculate_order_margin(self,_exchange,_tradingsymbol,_transaction_type,_variety,_product,_order_type,_quantity,_price,_trigger_price):
         params={"exchange":_exchange,"tradingsymbol":_tradingsymbol,"transaction_type":_transaction_type,"variety":_variety,"product":_product,"order_type":_order_type,"quantity":_quantity,"price":_price,"trigger_price":_trigger_price}
         try:
-            ord_margin=self._get(
+            ord_margin=self._post(
                 route="calculate_order_margin",
                 url_args=None,
                 content_type="application/json",
@@ -251,10 +289,9 @@ class MConnect:
             raise e
         return get_holdings
     
-    
     #New Endpoint
-    def get_historical_chart(self,_security_token,_interval,_fromDate,_toDate):
-        url_args={"security_token": _security_token,"interval":_interval}
+    def get_historical_chart(self,_segment,_security_token,_interval,_fromDate,_toDate):
+        url_args={"segment": _segment,"security_token": _security_token,"interval":_interval}
 
         date_range={"from":_fromDate,"to":_toDate}
         try:
@@ -378,8 +415,8 @@ class MConnect:
             raise e
         return conv_position
     
-    def loser_gainer(self,_Exchange,_SecurityIdCode,_segment):
-        data_packet={"Exchange":_Exchange,"SecurityIdCode":_SecurityIdCode,"segment":_segment,"TypeFlag":_segment}
+    def loser_gainer(self,_Exchange,_SecurityIdCode,_segment,_typeFlag):
+        data_packet={"Exchange":_Exchange,"SecurityIdCode":_SecurityIdCode,"segment":_segment,"TypeFlag":_segment,"TypeFlag":_typeFlag}
         try:
             _loserGainer=self._post(
                 route="loser_gainer",
@@ -442,7 +479,7 @@ class MConnect:
         try:
             data_packet={"BasketId":_BasketId}
             _delete_basket=self._delete(
-                route="delete_packet",
+                route="delete_basket",
                 url_args=None,
                 content_type="application/x-www-form-urlencoded",
                 params=data_packet
@@ -470,6 +507,69 @@ class MConnect:
             raise e
         return _calculate_basket
 
+    def get_trade_book(self):
+        try:
+            trade_book_details=self._get(
+                route="trade_book",
+                url_args=None,
+            )
+        except Exception as e:
+            type_, value_, traceback_ = sys.exc_info()
+            stack_trace = traceback.format_exception(type_, value_, traceback_)
+            self.logger.error(stack_trace)
+        return trade_book_details
+
+    def get_intraday_chart(self,_segment_id,_symbol):
+        try:
+            url_args={"segment_id": _segment_id,"symbol":_symbol}
+            intday_chart=self._get(
+                route="intraday_chart",
+                url_args=url_args,
+            )
+        except Exception as e:
+            type_, value_, traceback_ = sys.exc_info()
+            stack_trace = traceback.format_exception(type_, value_, traceback_)
+            self.logger.error(stack_trace) 
+        return intday_chart
+
+    def get_option_chain_master(self,_exchangeID):
+        try:
+            url_args={"exchange_id":_exchangeID}
+            opt_chain_mast=self._get(
+                route="option_chain_master",
+                url_args=url_args
+            )
+        except Exception as e:
+            type_, value_, traceback_ = sys.exc_info()
+            stack_trace = traceback.format_exception(type_, value_, traceback_)
+            self.logger.error(stack_trace)
+        return opt_chain_mast
+
+    def get_option_chain_data(self,_exchange_id,_expiry,_token):
+        try:
+            url_args={"exchange_id":_exchange_id,"expiry":_expiry,"token":_token}
+            opt_chain_data=self._get(
+                route="option_chain_data",
+                url_args=url_args
+            )
+        except Exception as e:
+            type_, value_, traceback_ = sys.exc_info()
+            stack_trace = traceback.format_exception(type_, value_, traceback_)
+            self.logger.error(stack_trace)
+        return opt_chain_data
+
+    def logout(self):
+        try:
+            logout=self._get(
+                route="logout",
+                url_args=None
+            )
+        except Exception as e:
+            type_, value_, traceback_ = sys.exc_info()
+            stack_trace = traceback.format_exception(type_, value_, traceback_)
+            self.logger.error(stack_trace)
+            raise e
+        return logout
 
     #Aliases for get,post,delete requests
     def _get(self, route, url_args=None, content_type=None, params=None, is_json=False):
@@ -519,15 +619,15 @@ class MConnect:
                 self.logger.debug("Request: {method} {url} {data} {headers}".format(method=method, url=url, data=params, headers=headers))
         
         # prepare url query params
-        if method in ["GET", "DELETE"]:
+        if method in ["GET"]: #, "DELETE"
             query_params = params
 
         try:
             response_data = self.request_session.request(method,
                                         url,
                                         json=params if (method in ["POST", "PUT"] and is_json) else None,
-                                        data=params if (method in ["POST", "PUT"] and not is_json) else None,
-                                        params=query_params,
+                                        data=params if (method in ["POST", "PUT","DELETE"] and not is_json) else None,
+                                        params=query_params if query_params else None,
                                         headers=headers,
                                         verify=not self.disable_ssl,
                                         allow_redirects=True,
@@ -571,10 +671,5 @@ class MConnect:
                     content_type=response_data.headers["content-type"],
                     content=response_data.content))
 
-        return response_data 
-
-
-
-
-
+        return response_data
 
