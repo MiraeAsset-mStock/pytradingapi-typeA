@@ -144,7 +144,7 @@ fetch_bask=mconnect_obj.fetch_basket()
 test_logger.info(f"Request : Fetch Basket. Response received : {fetch_bask.json()}")
 
 #Rename Basket
-rename_bask=mconnect_obj.rename_basket("ZRDTest_New","251")
+rename_bask=mconnect_obj.rename_basket("Test_New","251")
 test_logger.info(f"Request : Rename Basket. Response received : {rename_bask.json()}")
 
 #Delete Basket
