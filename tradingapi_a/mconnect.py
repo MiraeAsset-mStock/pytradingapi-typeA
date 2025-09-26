@@ -318,13 +318,12 @@ class MConnect:
         '''
         ohlc_input: List of strings in exchange:trading symbol format
         '''
-        ohlc_details={"i":value for value in ohlc_input}
         try:
             #Using session request
             get_ohlc_data=self._get(
                 route="market_ohlc",
                 url_args=None,
-                params=ohlc_details
+                params=[("i", symbol) for symbol in ohlc_input]
             )
         except Exception as e:
             type_, value_, traceback_ = sys.exc_info()
@@ -338,13 +337,12 @@ class MConnect:
         '''
         ltp_input: List of strings in exchange:trading symbol format
         '''
-        ltp_details={"i":value for value in ltp_input}
         try:
             #Using session request
             get_ltp_data=self._get(
                 route="market_ltp",
                 url_args=None,
-                params=ltp_details
+                params=[("i", symbol) for symbol in ltp_input]
             )
         except Exception as e:
             type_, value_, traceback_ = sys.exc_info()
@@ -620,7 +618,11 @@ class MConnect:
         
         # prepare url query params
         if method in ["GET"]: #, "DELETE"
-            query_params = params
+            if isinstance(params, list) and all(isinstance(p, tuple) and len(p) == 2 for p in params):
+                # Handle list of tuples for multiple parameters with same key
+                query_params = params
+            else:
+                query_params = params
 
         try:
             response_data = self.request_session.request(method,

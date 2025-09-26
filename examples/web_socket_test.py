@@ -4,7 +4,7 @@ import logging
  
  
 parent_dir=os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-sys.path.append(parent_dir)
+sys.path.insert(0, parent_dir)  # Insert at beginning to override installed package
 
 from tradingapi_a.mticker import *
 from tradingapi_a.mconnect import *
@@ -73,9 +73,9 @@ def on_connect(ws, response):
     # Callback on successful connect.
     m_ticker.send_login_after_connect()
     # Subscribe to a list of instrument_tokens .
-    ws.subscribe([5633])
-    # Set tick in `full` mode.
-    ws.set_mode(m_ticker.MODE_FULL, [5633])
+    ws.subscribe([3456])
+    # Set tick in LTP mode immediately after subscribe.
+    ws.set_mode(m_ticker.MODE_QUOTE, [3456])
 
 def on_close(ws, code, reason):
     # On connection close stop the event loop.

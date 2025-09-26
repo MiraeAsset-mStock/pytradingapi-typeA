@@ -546,131 +546,172 @@ class MTicker(object):
     
     def _parse_binary(self, bin):
         """Parse binary data to a (list of) ticks structure."""
-        packets = self._split_packets(bin)  # split data to individual ticks packet
+        try:
+            packets = self._split_packets(bin)  # split data to individual ticks packet
+        except Exception as e:
+            default_log.error(f"Error splitting packets: {e}")
+            return []
+        
         data = []
 
         for packet in packets:
-            instrument_token = self._unpack_int(packet, 0, 4)
-            segment = instrument_token & 0xff  # Retrive segment constant from instrument_token
+            try:
+                instrument_token = self._unpack_int(packet, 0, 4)
+                segment = instrument_token & 0xff  # Retrive segment constant from instrument_token
 
-            # Add price divisor based on segment
-            #Right now keeping it 100 for all
-            divisor = 100.0
+                # Add price divisor based on segment
+                #Right now keeping it 100 for all
+                divisor = 100.0
 
-            # All indices are not tradable
-            tradable = False if segment == self.EXCHANGE_MAP["indices"] else True
+                # All indices are not tradable
+                tradable = False if segment == self.EXCHANGE_MAP["indices"] else True
 
-            # LTP packets
-            if len(packet) == 8:
-                data.append({
-                    "tradable": tradable,
-                    "mode": self.MODE_LTP,
-                    "instrument_token": instrument_token,
-                    "last_price": self._unpack_int(packet, 4, 8) / divisor
-                })
-                # Indices quote and full mode
-            elif len(packet) == 28 or len(packet) == 32:
-                mode = self.MODE_QUOTE if len(packet) == 28 else self.MODE_FULL
+                # LTP packets
+                if len(packet) == 8:
+                    data.append({
+                        "tradable": tradable,
+                        "mode": self.MODE_LTP,
+                        "instrument_token": instrument_token,
+                        "last_price": self._unpack_int(packet, 4, 8) / divisor
+                    })
+                    # Indices quote and full mode
+                elif len(packet) == 28 or len(packet) == 32:
+                    mode = self.MODE_QUOTE if len(packet) == 28 else self.MODE_FULL
 
-                d = {
-                    "tradable": tradable,
-                    "mode": mode,
-                    "instrument_token": instrument_token,
-                    "last_price": self._unpack_int(packet, 4, 8) / divisor,
-                    "ohlc": {
-                            "high": self._unpack_int(packet, 8, 12) / divisor,
-                            "low": self._unpack_int(packet, 12, 16) / divisor,
-                            "open": self._unpack_int(packet, 16, 20) / divisor,
-                            "close": self._unpack_int(packet, 20, 24) / divisor
+                    d = {
+                        "tradable": tradable,
+                        "mode": mode,
+                        "instrument_token": instrument_token,
+                        "last_price": self._unpack_int(packet, 4, 8) / divisor,
+                        "ohlc": {
+                                "high": self._unpack_int(packet, 8, 12) / divisor,
+                                "low": self._unpack_int(packet, 12, 16) / divisor,
+                                "open": self._unpack_int(packet, 16, 20) / divisor,
+                                "close": self._unpack_int(packet, 20, 24) / divisor
+                            }
                         }
-                    }
 
-                # Compute the change price using close price and last price
-                d["change"] = 0
-                if (d["ohlc"]["close"] != 0):
-                    d["change"] = (d["last_price"] - d["ohlc"]["close"]) * 100 / d["ohlc"]["close"]
+                    # Compute the change price using close price and last price
+                    d["change"] = 0
+                    if (d["ohlc"]["close"] != 0):
+                        d["change"] = (d["last_price"] - d["ohlc"]["close"]) * 100 / d["ohlc"]["close"]
 
-                # Full mode with timestamp
-                if len(packet) == 32:
-                    try:
-                        #Changing to custom method on 01-07-25
-                        # timestamp = datetime.fromtimestamp(self._unpack_int(packet, 28, 32)).strftime("%Y-%m-%dT%I:%M:%S%p")
-                        timestamp = self.convert_from_unix_timestamp(self._unpack_int(packet, 28, 32)).strftime("%Y-%m-%dT%I:%M:%S%p")
-                    except Exception as e:
-                        print(e)
-                        timestamp = None
+                    # Full mode with timestamp
+                    if len(packet) == 32:
+                        try:
+                            #Changing to custom method on 01-07-25
+                            # timestamp = datetime.fromtimestamp(self._unpack_int(packet, 28, 32)).strftime("%Y-%m-%dT%I:%M:%S%p")
+                            timestamp = self.convert_from_unix_timestamp(self._unpack_int(packet, 28, 32)).strftime("%Y-%m-%dT%I:%M:%S%p")
+                        except Exception as e:
+                            print(e)
+                            timestamp = None
 
-                    d["exchange_timestamp"] = timestamp
-                data.append(d)
-            # Quote and full mode for non indices
-            elif len(packet) == 44 or len(packet) == 184:
-                mode = self.MODE_QUOTE if len(packet) == 44 else self.MODE_FULL
-
-                d = {
-                    "tradable": tradable,
-                    "mode": mode,
-                    "instrument_token": instrument_token,
-                    "last_price": self._unpack_int(packet, 4, 8) / divisor,
-                    "last_traded_quantity": self._unpack_int(packet, 8, 12),
-                    "average_traded_price": self._unpack_int(packet, 12, 16) / divisor,
-                    "volume_traded": self._unpack_int(packet, 16, 20),
-                    "total_buy_quantity": self._unpack_int(packet, 20, 24),
-                    "total_sell_quantity": self._unpack_int(packet, 24, 28),
-                    "ohlc": {
-                        "open": self._unpack_int(packet, 28, 32) / divisor,
-                        "high": self._unpack_int(packet, 32, 36) / divisor,
-                        "low": self._unpack_int(packet, 36, 40) / divisor,
-                        "close": self._unpack_int(packet, 40, 44) / divisor
-                        },
-                    }
-
-                #Adding more as per documentation
-                try:
-                    #Changed on 30-06-25 by shri
-                    # d["last_traded_timestamp"]=self._unpack_int(packet, 44, 48) / divisor,
-                    # d["last_traded_timestamp"]=datetime.fromtimestamp(self._unpack_int(packet, 44, 48)).strftime("%Y-%m-%dT%I:%M:%S%p"),
-                    d["last_traded_timestamp"]=self.convert_from_unix_timestamp(self._unpack_int(packet, 44, 48)).strftime("%Y-%m-%dT%I:%M:%S%p"),
-                except Exception as e:
-                    d["last_traded_timestamp"] = None
-
-                d["open_interest"]=self._unpack_int(packet,48,52)/divisor,
-                d["open_interest_high"]=self._unpack_int(packet,52,56)/divisor,
-                d["open_interest_low"]=self._unpack_int(packet,56,60)/divisor,
-                try:
-                    # d["exchange_timestamp"] = datetime.fromtimestamp(self._unpack_int(packet, 60, 64)).strftime("%Y-%m-%dT%I:%M:%S%p") #Added on 25-06-25
-                    d["exchange_timestamp"] = self.convert_from_unix_timestamp(self._unpack_int(packet, 60, 64)).strftime("%Y-%m-%dT%I:%M:%S%p") #Added on 25-06-25
-                except Exception as e:
-                    d["exchange_timestamp"] = None
-
-                # Compute the change price using close price and last price
-                d["change"] = 0
-                if (d["ohlc"]["close"] != 0):
-                    d["change"] = (d["last_price"] - d["ohlc"]["close"]) * 100 / d["ohlc"]["close"]
-
-                # Parse full mode
-                if len(packet) == 184:
-                    depth = {
-                            "bid": [],
-                            "ask": []
-                        }
+                        d["exchange_timestamp"] = timestamp
+                    data.append(d)
+                # Quote mode for non indices
+                elif len(packet) == 44:
+                    mode = self.MODE_QUOTE
+                # Full mode for non indices  
+                elif len(packet) == 184:
+                    mode = self.MODE_FULL
+                
+                if len(packet) == 44 or len(packet) == 184:
+                    # Check requested mode for this token
+                    requested_mode = self.subscribed_tokens.get(instrument_token, mode)
                     
-                    for i,p in enumerate(range(64, len(packet), 4)):
-                        depth["ask" if i >= 5 else "bid"].append({
-                                "quantity": self._unpack_int(packet, p, p + 4) if len(packet[p: p + 4])>0 else '',
-                                "price": self._unpack_int(packet, p + 4, p + 8) / divisor if len(packet[p+4: p + 8])>0 else '',
-                                #Adding to ignore empty byte buffer being sent
-                                "orders": self._unpack_int(packet, p + 8, p + 10, byte_format="H") if len(packet[p + 8: p + 10])>0 else '',
-                                "padding":self._unpack_int(packet, p + 10, p + 12, byte_format="H") if len(packet[p + 10: p + 12])>0 else '', #Changed struct format to allow padding less than 4 bytes
-                            })
+                    d = {
+                        "tradable": tradable,
+                        "mode": requested_mode,
+                        "instrument_token": instrument_token,
+                        "last_price": self._unpack_int(packet, 4, 8) / divisor
+                    }
+                    
+                    if requested_mode == self.MODE_LTP:
+                        # LTP mode - add all fields but set most to 0/null
+                        d.update({
+                            "last_traded_quantity": 0,
+                            "average_traded_price": 0.0,
+                            "volume_traded": 0,
+                            "total_buy_quantity": 0,
+                            "total_sell_quantity": 0,
+                            "ohlc": {"open": 0.0, "high": 0.0, "low": 0.0, "close": 0.0},
+                            "change": 0.0,
+                            "depth": None,
+                            "last_traded_timestamp": None,
+                            "open_interest": 0,
+                            "open_interest_high": 0,
+                            "open_interest_low": 0,
+                            "exchange_timestamp": None
+                        })
+                    else:
+                        d.update({
+                            "last_traded_quantity": self._unpack_int(packet, 8, 12),
+                            "average_traded_price": self._unpack_int(packet, 12, 16) / divisor,
+                            "volume_traded": self._unpack_int(packet, 16, 20),
+                            "total_buy_quantity": self._unpack_int(packet, 20, 24),
+                            "total_sell_quantity": self._unpack_int(packet, 24, 28),
+                            "ohlc": {
+                                "open": self._unpack_int(packet, 28, 32) / divisor,
+                                "high": self._unpack_int(packet, 32, 36) / divisor,
+                                "low": self._unpack_int(packet, 36, 40) / divisor,
+                                "close": self._unpack_int(packet, 40, 44) / divisor
+                            }
+                        })
 
-                    d["depth"] = depth
+                        #Adding more as per documentation for non-LTP modes
+                        if requested_mode != self.MODE_LTP:
+                            try:
+                                d["last_traded_timestamp"]=self.convert_from_unix_timestamp(self._unpack_int(packet, 44, 48)).strftime("%Y-%m-%dT%I:%M:%S%p")
+                            except Exception as e:
+                                d["last_traded_timestamp"] = None
 
-                data.append(d)
+                            d["open_interest"]=self._unpack_int(packet,48,52)/divisor,
+                            d["open_interest_high"]=self._unpack_int(packet,52,56)/divisor,
+                            d["open_interest_low"]=self._unpack_int(packet,56,60)/divisor,
+                            try:
+                                d["exchange_timestamp"] = self.convert_from_unix_timestamp(self._unpack_int(packet, 60, 64)).strftime("%Y-%m-%dT%I:%M:%S%p")
+                            except Exception as e:
+                                d["exchange_timestamp"] = None
+
+                            # Compute the change price using close price and last price
+                            d["change"] = 0
+                            if (d["ohlc"]["close"] != 0):
+                                d["change"] = (d["last_price"] - d["ohlc"]["close"]) * 100 / d["ohlc"]["close"]
+
+                            # Parse full mode depth data
+                            if len(packet) == 184 and requested_mode == self.MODE_FULL:
+                                depth = {
+                                        "bid": [],
+                                        "ask": []
+                                    }
+                                
+                                for i,p in enumerate(range(64, len(packet), 12)):
+                                    if p + 12 <= len(packet):
+                                        depth["ask" if i >= 5 else "bid"].append({
+                                            "quantity": self._unpack_int(packet, p, p + 4) if len(packet[p: p + 4]) == 4 else 0,
+                                            "price": self._unpack_int(packet, p + 4, p + 8) / divisor if len(packet[p+4: p + 8]) == 4 else 0,
+                                            "orders": self._unpack_int(packet, p + 8, p + 10, byte_format="H") if len(packet[p + 8: p + 10]) == 2 else 0,
+                                            "padding": self._unpack_int(packet, p + 10, p + 12, byte_format="H") if len(packet[p + 10: p + 12]) == 2 else 0,
+                                        })
+
+                                d["depth"] = depth
+
+                    data.append(d)
+            except Exception as e:
+                default_log.error(f"Error parsing packet: {e}, packet length: {len(packet)}")
+                continue
         return data
 
     def _unpack_int(self, bin, start, end, byte_format="I"):
         """Unpack binary data as unsigned interger."""
-        return struct.unpack(">" + byte_format, bin[start:end])[0]
+        data_slice = bin[start:end]
+        expected_size = 4 if byte_format == "I" else 2 if byte_format == "H" else 1
+        
+        if len(data_slice) != expected_size:
+            default_log.error(f"Buffer size mismatch: expected {expected_size}, got {len(data_slice)}")
+            return 0
+            
+        return struct.unpack(">" + byte_format, data_slice)[0]
 
     def _split_packets(self, bin):
         """Split the data to individual packets of ticks."""

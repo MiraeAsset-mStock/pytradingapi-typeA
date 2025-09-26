@@ -31,20 +31,19 @@ password="XXXXXXXX" #Replace with your password
 login_response=mconnect_obj.login(username,password)
 
 test_logger.info(f"Request : Login. Response received : {login_response.json()}")
-
 ## !!!! NOTE - Use generate_session() only when TOTP is NOT enabled for the user. Else use verify_totp() to generate access_token !!!!
 
 # #Generate session with OTP - access token by calling generate session
-# OTP=input("Enter OTP received on your registered mobile number : ");
-# gen_response=mconnect_obj.generate_session(__config__.API_KEY,OTP,"W")
-# test_logger.info(f"Request : Generate Session. Response received : {gen_response.json()}")
+OTP=input("Enter OTP received on your registered mobile number : ")
+gen_response=mconnect_obj.generate_session(__config__.API_KEY,OTP,"W")
+test_logger.info(f"Request : Generate Session. Response received : {gen_response.json()}")
 
 ## !!!! NOTE - If TOTP is enabled for the user, then only call Verify TOTP. Else skip verify_totp() !!!!
 
 #Generate session with TOTP - Check Verify TOTP
-TOTP=input("Enter TOTP from Auhtenticator app : ")
-totp_verify=mconnect_obj.verify_totp(__config__.API_KEY,TOTP)
-print(f"Request : Verify TOTP. Response received : {totp_verify.json()}")
+# TOTP=input("Enter TOTP from Auhtenticator app : ")
+# totp_verify=mconnect_obj.verify_totp(__config__.API_KEY,TOTP)
+# print(f"Request : Verify TOTP. Response received : {totp_verify.json()}")
 
 #Getting API Key
 api_key=__config__.API_KEY
@@ -100,11 +99,13 @@ trade_history=mconnect_obj.get_trade_history("2025-01-05","2025-01-10")
 test_logger.info(f"Request : Trade History. Response received : {trade_history.json()}")
 
 #OHLC
-get_ohlc=mconnect_obj.get_ohlc(["NSE:ACC","BSE:ACC"])
+get_ohlc=mconnect_obj.get_ohlc(["NSE:ACC","BSE:ACC","NSE:RVNL","BSE:TATAMOTORS","NSE:TATAMOTORS"])
+print("ohlc",get_ohlc.json())
 test_logger.info(f"Request : Fetch Market Data OHLC. Response received : {get_ohlc.json()}")
 
 #LTP
-get_ltp=mconnect_obj.get_ltp(["NSE:ACC","BSE:ACC"])
+get_ltp=mconnect_obj.get_ltp(["NSE:ACC","BSE:ACC","NSE:RVNL","BSE:TATAMOTORS"])
+print("ltp",get_ltp.json())
 test_logger.info(f"Request : Fetch Market Data LTP. Response received : {get_ltp.json()}")
 
 #Get Instrument Scrip Master
