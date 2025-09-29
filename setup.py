@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="mStock-TradingApi-A",
-    version="0.0.0",
+    version="0.1.2",
     author="Mirae Asset Capital Markets (India) Private Limited", 
     description="A Python SDK for Connecting to mStock Trading API and Streaming API",
     long_description=open("README.md").read(),
