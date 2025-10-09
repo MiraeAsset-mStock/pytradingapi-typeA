@@ -1,0 +1,13 @@
+{
+    "status": "success",
+    "data": {
+        "ugid": "8a58bcd8-8XXXXXXXXXXXXX-XXXXXXXXd6634e33",
+        "is_kyc": "True",
+        "is_activate": "True",
+        "is_password_reset": "True",
+        "is_error": "False",
+        "cid": "XXXXX",
+        "nm": "XXXXX",
+        "flag": 0
+    }
+}

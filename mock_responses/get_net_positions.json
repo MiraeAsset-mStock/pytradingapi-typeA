@@ -1,0 +1,39 @@
+{
+    "status": "success",
+    "data": {
+        "net": [
+            {
+                "tradingsymbol": "TCS",
+                "exchange": "NSE",
+                "instrument_token": 11536,
+                "product": "NRML",
+                "quantity": 3,
+                "overnight_quantity": 0,
+                "multiplier": 1,
+                "average_price": 4093,
+                "close_price": 4231.75,
+                "last_price": 4231.75,
+                "value": 12279,
+                "pnl": 0,
+                "m2m": 416.25,
+                "unrealised": 0,
+                "realised": 0,
+                "buy_quantity": 3,
+                "buy_price": 4093,
+                "buy_value": 12279,
+                "buy_m2m": 0,
+                "sell_quantity": 0,
+                "sell_price": 0,
+                "sell_value": 0,
+                "sell_m2m": 0,
+                "day_buy_quantity": 3,
+                "day_buy_price": 4093,
+                "day_buy_value": 12279,
+                "day_sell_quantity": 0,
+                "day_sell_price": 0,
+                "day_sell_value": 0
+            }
+        ],
+        "day": "None"
+    }
+}
