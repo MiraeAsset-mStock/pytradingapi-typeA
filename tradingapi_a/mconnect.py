@@ -383,8 +383,8 @@ class MConnect:
     def get_trade_history(self,_fromDate,_toDate):
         details_packet={"fromdate":_fromDate,"todate":_toDate}
         try:
-            #Using session request
-            get_trade=self._get(
+            
+            get_trade=self._post(
                 route="trade_history",
                 url_args=None,
                 content_type="application/x-www-form-urlencoded",
