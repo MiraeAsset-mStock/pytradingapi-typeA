@@ -54,7 +54,7 @@ access_token=mconnect_obj.access_token
 #Test Order Placement, Modification etc
 
 #Place Order
-porder_resp=mconnect_obj.place_order("regular","SBICARD","NSE","BUY","MARKET","10","CNC","DAY","0","0")
+porder_resp=mconnect_obj.place_order("regular","SBICARD","NSE","BUY","MARKET","10","CNC","DAY","0","0","0","tag")
 test_logger.info(f"Request : Place Order. Response received : {porder_resp.json()}")
 
 #Modify Order

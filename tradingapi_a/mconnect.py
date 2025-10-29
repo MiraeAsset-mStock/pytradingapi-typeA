@@ -122,7 +122,7 @@ class MConnect:
         return verify_totp_user
     
     #Added variety parameter on 25-06-25 to allow regular,CO and AMO orders
-    def place_order(self,_variety,_tradingsymbol,_exchange,_transaction_type,_order_type,_quantity,_product,_validity,_price,_trigger_price):
+    def place_order(self,_variety,_tradingsymbol,_exchange,_transaction_type,_order_type,_quantity,_product,_validity,_price,_trigger_price,_disclosed_quantity,_tag):
         '''
         Place a regular trading order in the provided segment
         '''
@@ -137,7 +137,7 @@ class MConnect:
         else:
             #incase of order types not available
             return {"status":"error","message":"Only order types NORMAL,AMO and COVER are available."}
-        order_packet={"tradingsymbol":_tradingsymbol,"exchange":_exchange,"transaction_type":_transaction_type,"order_type":_order_type,"quantity":_quantity,"product":_product,"validity":_validity,"price":_price,"trigger_price":_trigger_price}
+        order_packet={"tradingsymbol":_tradingsymbol,"exchange":_exchange,"transaction_type":_transaction_type,"order_type":_order_type,"quantity":_quantity,"product":_product,"validity":_validity,"price":_price,"trigger_price":_trigger_price,"disclosed_quantity":_disclosed_quantity,"tag":_tag}
         try:
             order_session=self._post(
                 route=api_route,
