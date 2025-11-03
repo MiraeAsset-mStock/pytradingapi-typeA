@@ -3,7 +3,7 @@ import csv
 import logging
 
 parent_dir=os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-sys.path.append(parent_dir)
+sys.path.insert(0, parent_dir)
 
 from tradingapi_a.mconnect import *
 from tradingapi_a import __config__
