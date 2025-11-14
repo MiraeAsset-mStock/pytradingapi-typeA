@@ -30,7 +30,7 @@ routes= {
         "delete_basket":"openapi/typea/DeleteBasket",
         "calculate_basket":"openapi/typea/CalculateBasket",
         "trade_book":"openapi/typea/tradebook", 
-        "intraday_chart":"openapi/typea/instruments/intraday/{segment_id}/{symbol}/minute",
+        "intraday_chart":"openapi/typea/instruments/intraday/{segment_id}/{symbol}/{interval}",
         "option_chain_master":"openapi/typea/getoptionchainmaster/{exchange_id}", 
         "option_chain_data":"openapi/typea/GetOptionChain/{exchange_id}/{expiry}/{token}", 
         "logout":"openapi/typea/logout"

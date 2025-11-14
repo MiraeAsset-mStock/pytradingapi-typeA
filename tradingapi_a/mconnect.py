@@ -517,9 +517,9 @@ class MConnect:
             self.logger.error(stack_trace)
         return trade_book_details
 
-    def get_intraday_chart(self,_segment_id,_symbol):
+    def get_intraday_chart(self,_segment_id,_symbol,_interval):
         try:
-            url_args={"segment_id": _segment_id,"symbol":_symbol}
+            url_args={"segment_id": _segment_id,"symbol":_symbol, "interval":_interval}
             intday_chart=self._get(
                 route="intraday_chart",
                 url_args=url_args,
