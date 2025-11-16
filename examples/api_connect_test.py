@@ -161,7 +161,7 @@ trade_book=mconnect_obj.get_trade_book()
 test_logger.info(f"Request : Get Trade Book. Response received : {trade_book.json()}")
 
 #Get Intraday chart
-intr_chart=mconnect_obj.get_intraday_chart("4","AUBANK")
+intr_chart=mconnect_obj.get_intraday_chart("1","22","Minute")
 test_logger.info(f"Request : Get Intraday chart data. Response received : {intr_chart.json()}")
 
 #Get Option Chain Master

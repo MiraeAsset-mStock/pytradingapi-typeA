@@ -115,7 +115,7 @@ mconnect_obj.calculate_basket("0","C","0","E","0","11915","LMT","Test Basket","I
 mconnect_obj.get_trade_book()
 
 #Get Intraday Chart
-mconnect_obj.get_intraday_chart("4","AUBANK")
+mconnect_obj.get_intraday_chart("1","22","Minute")
 
 #Get Option Chain Master
 mconnect_obj.get_option_chain_master("5")
