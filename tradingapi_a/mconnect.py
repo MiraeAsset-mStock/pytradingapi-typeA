@@ -136,7 +136,7 @@ class MConnect:
             api_route="place_order"
         else:
             #incase of order types not available
-            return {"status":"error","message":"Only order types NORMAL,AMO and COVER are available."}
+            return {"status":"error","message":"Only order types REGULAR,AMO and COVER are available."}
         order_packet={"tradingsymbol":_tradingsymbol,"exchange":_exchange,"transaction_type":_transaction_type,"order_type":_order_type,"quantity":_quantity,"product":_product,"validity":_validity,"price":_price,"trigger_price":_trigger_price,"disclosed_quantity":_disclosed_quantity,"tag":_tag}
         try:
             order_session=self._post(
