@@ -489,6 +489,8 @@ class MTicker(object):
         # If the message is binary, parse it and send it to the callback.
         if self.on_ticks and is_binary and len(payload) > 4:
             self.on_ticks(self, self._parse_binary(payload))
+        elif is_binary:
+            default_log.info(f"Received binary message with length {len(payload)} (too short to parse)")
 
         # Parse text messages
         if not is_binary:
@@ -608,14 +610,48 @@ class MTicker(object):
 
                         d["exchange_timestamp"] = timestamp
                     data.append(d)
+                # Index full mode with 52-week high/low
+                elif len(packet) == 48:
+                    requested_mode = self.subscribed_tokens.get(instrument_token, self.MODE_FULL)
+                    d = {
+                        "tradable": tradable,
+                        "mode": requested_mode,
+                        "instrument_token": instrument_token,
+                        "last_price": self._unpack_int(packet, 4, 8) / divisor,
+                        "ohlc": {
+                            "open": self._unpack_int(packet, 8, 12) / divisor,
+                            "high": self._unpack_int(packet, 12, 16) / divisor,
+                            "low": self._unpack_int(packet, 16, 20) / divisor,
+                            "close": self._unpack_int(packet, 20, 24) / divisor
+                        }
+                    }
+                    d["change"] = 0
+                    if d["ohlc"]["close"] != 0:
+                        d["change"] = (d["last_price"] - d["ohlc"]["close"]) * 100 / d["ohlc"]["close"]
+                    try:
+                        d["last_traded_timestamp"] = self.convert_from_unix_timestamp(self._unpack_int(packet, 24, 28)).strftime("%Y-%m-%dT%I:%M:%S%p")
+                    except:
+                        d["last_traded_timestamp"] = None
+                    d["open_interest"] = 0
+                    d["open_interest_high"] = 0
+                    d["open_interest_low"] = 0
+                    try:
+                        d["exchange_timestamp"] = self.convert_from_unix_timestamp(self._unpack_int(packet, 28, 32)).strftime("%Y-%m-%dT%I:%M:%S%p")
+                    except:
+                        d["exchange_timestamp"] = None
+                    d["upper_circuit"] = self._unpack_int(packet, 32, 36) / divisor
+                    d["lower_circuit"] = self._unpack_int(packet, 36, 40) / divisor
+                    d["52_Week_High"] = self._unpack_int(packet, 40, 44) / divisor
+                    d["52_Week_Low"] = self._unpack_int(packet, 44, 48) / divisor
+                    data.append(d)
                 # Quote mode for non indices
                 elif len(packet) == 44:
                     mode = self.MODE_QUOTE
                 # Full mode for non indices  
-                elif len(packet) == 184:
+                elif len(packet) == 184 or len(packet) == 200:
                     mode = self.MODE_FULL
                 
-                if len(packet) == 44 or len(packet) == 184:
+                if len(packet) == 44 or len(packet) == 184 or len(packet) == 200:
                     # Check requested mode for this token
                     requested_mode = self.subscribed_tokens.get(instrument_token, mode)
                     
@@ -679,13 +715,17 @@ class MTicker(object):
                                 d["change"] = (d["last_price"] - d["ohlc"]["close"]) * 100 / d["ohlc"]["close"]
 
                             # Parse full mode depth data
-                            if len(packet) == 184 and requested_mode == self.MODE_FULL:
+                            if (len(packet) == 184 or len(packet) == 200) and requested_mode == self.MODE_FULL:
                                 depth = {
                                         "bid": [],
                                         "ask": []
                                     }
                                 
-                                for i,p in enumerate(range(64, len(packet), 12)):
+                                # For 200-byte packets, depth data starts at byte 64, same as 184-byte packets
+                                depth_start = 64
+                                depth_end = min(len(packet), 184)  # Limit to 184 to match expected format
+                                
+                                for i,p in enumerate(range(depth_start, depth_end, 12)):
                                     if p + 12 <= len(packet):
                                         depth["ask" if i >= 5 else "bid"].append({
                                             "quantity": self._unpack_int(packet, p, p + 4) if len(packet[p: p + 4]) == 4 else 0,
@@ -695,11 +735,20 @@ class MTicker(object):
                                         })
 
                                 d["depth"] = depth
+                                
+                                # Parse additional fields for 200-byte packets
+                                if len(packet) == 200:
+                                    d["upper_circuit"] = self._unpack_int(packet, 184, 188) / divisor
+                                    d["lower_circuit"] = self._unpack_int(packet, 188, 192) / divisor
+                                    d["52_Week_High"] = self._unpack_int(packet, 192, 196) / divisor
+                                    d["52_Week_Low"] = self._unpack_int(packet, 196, 200) / divisor
 
                     data.append(d)
             except Exception as e:
-                default_log.error(f"Error parsing packet: {e}, packet length: {len(packet)}")
+                default_log.error(f"Error parsing packet: {e}, packet length: {len(packet)}, token: {instrument_token if 'instrument_token' in locals() else 'unknown'}")
                 continue
+        
+        default_log.info(f"Returning {len(data)} ticks")
         return data
 
     def _unpack_int(self, bin, start, end, byte_format="I"):
