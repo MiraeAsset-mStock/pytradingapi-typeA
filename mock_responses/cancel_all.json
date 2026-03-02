@@ -1,0 +1,5 @@
+{
+    "status": "error",
+    "message": "something went wrong",
+    "error_type": "MiraeException"
+}

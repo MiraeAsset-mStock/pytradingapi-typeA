@@ -1,0 +1,36 @@
+{
+    "status": "success",
+    "data": {
+        "type": "equity",
+        "tradingsymbol": "INFY",
+        "exchange": "NSE",
+        "span": 0,
+        "exposure": 0,
+        "option_premium": 0,
+        "additional": 0,
+        "bo": 0,
+        "cash": 0.0,
+        "var": 0,
+        "pnl": {
+            "realised": 0,
+            "unrealised": 0
+        },
+        "leverage": 0,
+        "charges": {
+            "transaction_tax": 0,
+            "transaction_tax_type": "stt",
+            "exchange_turnover_charge": 0,
+            "sebi_turnover_charge": 0,
+            "brokerage": 0,
+            "stamp_duty": 0,
+            "gst": {
+                "igst": 0,
+                "cgst": 0,
+                "sgst": 0,
+                "total": 0
+            },
+            "total": 0
+        },
+        "total": 0.0
+    }
+}

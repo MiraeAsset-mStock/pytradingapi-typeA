@@ -1,0 +1,6 @@
+{
+    "status": "error",
+    "message": "NSE EQUITY 11536 EQ XXXXXX B 3 C INSUFICIENT QUANTITY TO CONVERT. INSUFICIENT QUANTITY: 3 AVAILABLE QUANTITY: 0",
+    "error_type": "MiraeException",
+    "data": "None"
+}
